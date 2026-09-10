@@ -1,0 +1,19 @@
+add_library(engine STATIC)
+
+target_sources(engine
+    PRIVATE
+        src/math/Vec2.cpp
+)
+
+target_include_directories(engine
+    PUBLIC
+        include
+)
+
+target_compile_options(engine
+    PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Wconversion
+)

@@ -1,59 +1,65 @@
-# cpp-3d-engine
-A small 3D engine and software renderer written in C++ as a hands-on companion project for studying 3D math, rendering, animation, geometry, and physics.
+<div align="center">
+
+# Educational 3D Engine
+
+**A from-scratch software renderer for learning how 3D engines work.**
+
+![Language](https://img.shields.io/badge/language-C%2B%2B-00599C?style=flat-square&logo=cplusplus&logoColor=white)
+![Renderer](https://img.shields.io/badge/renderer-CPU%20%2F%20software-6C5CE7?style=flat-square)
+![Status](https://img.shields.io/badge/status-learning%20%26%20planning-F2C94C?style=flat-square)
+
+*3D math · rendering · animation · geometry · physics*
+
+</div>
+
+This project is a hands-on companion to *3D Math Primer for Graphics and Game Development*. It turns each concept from the book into a visible, working part of a small C++ engine.
 
 The project is intentionally educational rather than production-oriented. The goal is to implement the important math and engine systems manually, understand why they work, and immediately visualize each concept instead of leaving it as abstract theory.
 
-The project grows alongside 3D Math Primer for Graphics and Game Development.
+> **Current focus:** Chapter 8 is complete. The next milestone is a window, application loop, and software framebuffer.
 
-Project Goals
+## Contents
 
-Build a working 3D engine from the ground up.
+- [Goals and philosophy](#project-goals)
+- [Technology](#planned-tech-stack)
+- [Roadmap](#roadmap)
+- [Planned architecture](#intended-final-result)
+- [Current status](#current-status)
+- [Learning strategy](#learning-strategy-going-forward)
 
-Implement the core math layer manually:
+---
 
-vectors;
+## Project Goals
 
-matrices;
+- Build a working 3D engine from the ground up.
+- Implement the core math layer manually:
+  - vectors;
+  - matrices;
+  - quaternions;
+  - coordinate-space transformations;
+  - projections;
+  - interpolation.
+- Build a CPU/software rendering pipeline before relying on a graphics API for the actual 3D math.
+- Use one continuously growing project instead of isolated chapter exercises.
+- Apply every important math concept visually as soon as it is learned.
+- Use a **3D human model** as the main visual test object instead of spending the whole project staring at a cube.
+- Gradually extend the project into:
+  - scene management;
+  - geometry queries;
+  - object picking;
+  - lighting;
+  - texturing;
+  - skeletal animation;
+  - basic physics;
+  - curves and splines.
 
-quaternions;
+---
 
-coordinate-space transformations;
-
-projections;
-
-interpolation.
-
-Build a CPU/software rendering pipeline before relying on a graphics API for the actual 3D math.
-
-Use one continuously growing project instead of isolated chapter exercises.
-
-Apply every important math concept visually as soon as it is learned.
-
-Use a 3D human model as the main visual test object instead of spending the whole project staring at a cube.
-
-Gradually extend the project into:
-
-scene management;
-
-geometry queries;
-
-object picking;
-
-lighting;
-
-texturing;
-
-skeletal animation;
-
-basic physics;
-
-curves and splines.
-
-Philosophy
+## Philosophy
 
 This project follows one rule:
 
-Learn a concept → implement it → visualize it → move on.
+> Learn a concept → implement it → visualize it → move on.
 
 The engine is not intended to compete with Unreal Engine, Unity, Godot, or other production engines.
 
@@ -61,26 +67,24 @@ The point is to understand what those engines are doing underneath.
 
 Diagnostic primitives such as cubes, triangles, spheres, axes, and bounding boxes will still be used when they make a mathematical problem easier to inspect, but the main long-term test object will be a human character model.
 
-Planned Tech Stack
+---
 
-Language: C++
+## Planned Tech Stack
 
-Rendering: CPU/software renderer
+- **Language:** C++
+- **Rendering:** CPU/software renderer
+- **Window / input / framebuffer:** SDL or GLFW
+- **Debug/editor UI later:** Dear ImGui or a similar lightweight library
+- **Math:** custom implementation
+- **3D assets:** simple low-poly human model initially
 
-Window / input / framebuffer: SDL or GLFW
-
-Debug/editor UI later: Dear ImGui or a similar lightweight library
-
-Math: custom implementation
-
-3D assets: simple low-poly human model initially
-
-Deliberately avoided in the learning phase
+### Deliberately avoided in the learning phase
 
 Libraries such as GLM or Eigen will not be used for the core educational math layer.
 
 The project should contain its own implementations of concepts such as:
 
+```text
 Vec2
 Vec3
 Vec4
@@ -88,53 +92,46 @@ Mat3
 Mat4
 Quaternion
 Transform
+```
 
 The point is not to reinvent these libraries forever. The point is to understand them first.
 
-Roadmap
+---
 
-Phase 0 — C++ Foundation
+## Roadmap
+
+### Phase 0 — C++ Foundation
 
 Learn only the C++ required to build the project instead of studying the entire language before starting.
 
-Project structure
+- [ ] Project structure
+- [ ] Build system
+- [ ] Classes and structs
+- [ ] References and pointers
+- [ ] RAII and basic resource ownership
+- [ ] `std::vector`
+- [ ] File loading
+- [ ] Basic debugging
 
-Build system
+---
 
-Classes and structs
-
-References and pointers
-
-RAII and basic resource ownership
-
-std::vector
-
-File loading
-
-Basic debugging
-
-Phase 1 — Window and Software Framebuffer
+### Phase 1 — Window and Software Framebuffer
 
 The first milestone is simply getting pixels onto the screen.
 
-Create a window
-
-Handle the application loop
-
-Handle keyboard and mouse input
-
-Create a software framebuffer
-
-Draw a pixel
-
-Draw a line
-
-Draw a triangle
+- [ ] Create a window
+- [ ] Handle the application loop
+- [ ] Handle keyboard and mouse input
+- [ ] Create a software framebuffer
+- [ ] Draw a pixel
+- [ ] Draw a line
+- [ ] Draw a triangle
 
 At this stage the engine does not need a real scene system.
 
 The goal is only to establish:
 
+```text
 Application
     ↓
 Update
@@ -144,81 +141,60 @@ Render
 Framebuffer
     ↓
 Window
+```
 
-Phase 2 — Math Library
+---
+
+### Phase 2 — Math Library
 
 Implement the mathematical foundation manually.
 
-Vectors
+#### Vectors
 
-Vec2
+- [ ] `Vec2`
+- [ ] `Vec3`
+- [ ] `Vec4`
+- [ ] Length
+- [ ] Normalization
+- [ ] Dot product
+- [ ] Cross product
+- [ ] Projection
 
-Vec3
+#### Matrices
 
-Vec4
+- [ ] `Mat3`
+- [ ] `Mat4`
+- [ ] Matrix multiplication
+- [ ] Vector × matrix transformation
+- [ ] Translation
+- [ ] Rotation
+- [ ] Scaling
+- [ ] Matrix inverse where needed
+- [ ] Transpose
+- [ ] Homogeneous coordinates
 
-Length
+#### Quaternions
 
-Normalization
+- [ ] Quaternion representation
+- [ ] Normalize
+- [ ] Conjugate
+- [ ] Inverse
+- [ ] Quaternion multiplication
+- [ ] Axis-angle → quaternion
+- [ ] Euler → quaternion
+- [ ] Quaternion → Euler
+- [ ] Quaternion → matrix
+- [ ] Matrix → quaternion
+- [ ] Quaternion difference
+- [ ] SLERP
 
-Dot product
+---
 
-Cross product
-
-Projection
-
-Matrices
-
-Mat3
-
-Mat4
-
-Matrix multiplication
-
-Vector × matrix transformation
-
-Translation
-
-Rotation
-
-Scaling
-
-Matrix inverse where needed
-
-Transpose
-
-Homogeneous coordinates
-
-Quaternions
-
-Quaternion representation
-
-Normalize
-
-Conjugate
-
-Inverse
-
-Quaternion multiplication
-
-Axis-angle → quaternion
-
-Euler → quaternion
-
-Quaternion → Euler
-
-Quaternion → matrix
-
-Matrix → quaternion
-
-Quaternion difference
-
-SLERP
-
-Phase 3 — First 3D Rendering Pipeline
+### Phase 3 — First 3D Rendering Pipeline
 
 Build the core transformation pipeline:
 
+```text
 Object Space
     ↓
 World Space
@@ -228,111 +204,93 @@ Camera / View Space
 Projection
     ↓
 Screen Space
+```
 
-3D vertices
-
-Model matrix
-
-View matrix
-
-Projection matrix
-
-Perspective divide
-
-Viewport transformation
-
-Wireframe mesh rendering
+- [ ] 3D vertices
+- [ ] Model matrix
+- [ ] View matrix
+- [ ] Projection matrix
+- [ ] Perspective divide
+- [ ] Viewport transformation
+- [ ] Wireframe mesh rendering
 
 A cube or simple primitive may be used temporarily here because it is useful for debugging projection errors.
 
-Phase 4 — Camera
+---
+
+### Phase 4 — Camera
 
 Build a controllable perspective camera.
 
-Camera transform
-
-Position
-
-Heading / yaw
-
-Pitch
-
-View matrix
-
-Perspective projection
-
-FOV control
-
-Near/far clipping configuration
-
-Free camera movement
-
-Orbit camera experiment
+- [ ] Camera transform
+- [ ] Position
+- [ ] Heading / yaw
+- [ ] Pitch
+- [ ] View matrix
+- [ ] Perspective projection
+- [ ] FOV control
+- [ ] Near/far clipping configuration
+- [ ] Free camera movement
+- [ ] Orbit camera experiment
 
 This phase should make concepts such as camera space, spherical coordinates, perspective projection, and FOV visible in real time.
 
-Phase 5 — Human Mesh
+---
+
+### Phase 5 — Human Mesh
 
 Replace the primitive as the main scene object with a simple low-poly human mesh.
 
 Initial version:
 
+```text
 Human
 └── Mesh
+```
 
 The character can initially be completely static.
 
-Load vertex data
-
-Load triangle/index data
-
-Render the mesh in wireframe
-
-Apply position
-
-Apply rotation
-
-Apply scale
-
-Move camera around the character
+- [ ] Load vertex data
+- [ ] Load triangle/index data
+- [ ] Render the mesh in wireframe
+- [ ] Apply position
+- [ ] Apply rotation
+- [ ] Apply scale
+- [ ] Move camera around the character
 
 The renderer should treat the human exactly like any other triangle mesh.
 
-Phase 6 — Transform and Orientation Lab
+---
+
+### Phase 6 — Transform and Orientation Lab
 
 The human character becomes the visual test object for Chapter 8 concepts.
 
 Each entity should eventually contain something similar to:
 
+```text
 Transform
 ├── Position
 ├── Orientation (Quaternion)
 └── Scale
+```
 
 Experiments:
 
-Rotate the character using Euler angles
-
-Convert Euler angles to a quaternion
-
-Store runtime orientation as a quaternion
-
-Convert quaternion to matrix for rendering
-
-Apply incremental quaternion rotation
-
-Use angular speed × deltaTime
-
-SLERP between two orientations
-
-Display Euler angles in debug UI
-
-Demonstrate Euler gimbal lock at pitch ≈ ±90°
-
-Compare Euler interpolation with SLERP
+- [ ] Rotate the character using Euler angles
+- [ ] Convert Euler angles to a quaternion
+- [ ] Store runtime orientation as a quaternion
+- [ ] Convert quaternion to matrix for rendering
+- [ ] Apply incremental quaternion rotation
+- [ ] Use angular speed × `deltaTime`
+- [ ] SLERP between two orientations
+- [ ] Display Euler angles in debug UI
+- [ ] Demonstrate Euler gimbal lock at pitch ≈ ±90°
+- [ ] Compare Euler interpolation with SLERP
 
 Conceptual runtime flow:
 
+```text
 Input / Animation / Physics
           ↓
        Quaternion
@@ -344,56 +302,61 @@ Input / Animation / Physics
        Vertices
           ↓
        Renderer
+```
 
-Scene System
+---
+
+### Scene System
 
 Once basic rendering works, hardcoded objects should become proper scene entities.
 
+```text
 Scene
 ├── Camera
 ├── Human
 ├── Ground
 └── Other Entities
+```
 
 Each entity may gradually gain components such as:
 
+```text
 Entity
 ├── Transform
 ├── Mesh
 ├── Material
 └── Physics
+```
 
 Planned features:
 
-Entity representation
+- [ ] Entity representation
+- [ ] Scene container
+- [ ] Transform component
+- [ ] Mesh component
+- [ ] Active camera
+- [ ] Parent-child hierarchy
+- [ ] Local transform
+- [ ] World transform
 
-Scene container
+---
 
-Transform component
-
-Mesh component
-
-Active camera
-
-Parent-child hierarchy
-
-Local transform
-
-World transform
-
-Scene Hierarchy and Nested Coordinate Spaces
+#### Scene Hierarchy and Nested Coordinate Spaces
 
 Hierarchy is one of the main practical applications of coordinate-space mathematics.
 
 Example:
 
+```text
 Character
 └── Arm
     └── Forearm
         └── Hand
+```
 
 A point on the hand may conceptually travel through:
 
+```text
 Hand Local Space
       ↓
 Forearm Space
@@ -403,53 +366,42 @@ Arm Space
 Character Space
       ↓
 World Space
+```
 
 This will be used later for skeletal animation.
 
-Chapter 9 — Geometric Primitives
+---
+
+### Chapter 9 — Geometric Primitives
 
 Chapter 9 concepts will be added directly to the existing engine.
 
 Planned systems:
 
-Lines
-
-Rays
-
-Planes
-
-Spheres
-
-AABB
-
-Triangles
-
-Barycentric coordinates
-
-Polygon-related utilities
+- [ ] Lines
+- [ ] Rays
+- [ ] Planes
+- [ ] Spheres
+- [ ] AABB
+- [ ] Triangles
+- [ ] Barycentric coordinates
+- [ ] Polygon-related utilities
 
 Practical experiments:
 
-Visualize rays
-
-Visualize planes
-
-Draw bounding boxes
-
-Draw bounding spheres
-
-Ray-plane intersection
-
-Ray-sphere intersection
-
-Ray-triangle intersection
-
-Ray-AABB intersection
-
-Mouse picking
+- [ ] Visualize rays
+- [ ] Visualize planes
+- [ ] Draw bounding boxes
+- [ ] Draw bounding spheres
+- [ ] Ray-plane intersection
+- [ ] Ray-sphere intersection
+- [ ] Ray-triangle intersection
+- [ ] Ray-AABB intersection
+- [ ] Mouse picking
 
 Example:
 
+```text
 Mouse Position
       ↓
 Screen Ray
@@ -459,51 +411,39 @@ World Ray
 Intersection Test
       ↓
 Selected Entity
+```
 
 This will allow clicking directly on the human model inside the scene.
 
-Chapter 10 — Graphics
+---
+
+### Chapter 10 — Graphics
 
 This phase develops the software renderer into a more complete graphics pipeline.
 
 Planned topics:
 
-View frustum
-
-Model space
-
-World space
-
-Camera space
-
-Clip space
-
-Screen space
-
-Indexed triangle meshes
-
-Surface normals
-
-Backface culling
-
-Clipping
-
-Triangle rasterization
-
-Depth buffer
-
-Shading
-
-Lighting
-
-Texture coordinates
-
-Texture mapping
-
-Tangent space
+- [ ] View frustum
+- [ ] Model space
+- [ ] World space
+- [ ] Camera space
+- [ ] Clip space
+- [ ] Screen space
+- [ ] Indexed triangle meshes
+- [ ] Surface normals
+- [ ] Backface culling
+- [ ] Clipping
+- [ ] Triangle rasterization
+- [ ] Depth buffer
+- [ ] Shading
+- [ ] Lighting
+- [ ] Texture coordinates
+- [ ] Texture mapping
+- [ ] Tangent space
 
 The human character should gradually progress from:
 
+```text
 wireframe
     ↓
 solid triangles
@@ -513,13 +453,17 @@ depth-tested mesh
 lit mesh
     ↓
 textured character
+```
 
-Skeletal Animation
+---
+
+### Skeletal Animation
 
 The human model becomes especially useful when skeletal animation is introduced.
 
 Possible hierarchy:
 
+```text
 Pelvis
 ├── Spine
 │   └── Chest
@@ -533,33 +477,25 @@ Pelvis
 │           └── Right Arm
 ├── Left Leg
 └── Right Leg
+```
 
 Planned features:
 
-Skeleton hierarchy
-
-Bone local transforms
-
-Bone world transforms
-
-Quaternion bone orientation
-
-Parent-child transform propagation
-
-Bind pose
-
-Skinning
-
-Animation keyframes
-
-Quaternion interpolation
-
-Head-turn experiment using SLERP
-
-Arm and leg animation experiments
+- [ ] Skeleton hierarchy
+- [ ] Bone local transforms
+- [ ] Bone world transforms
+- [ ] Quaternion bone orientation
+- [ ] Parent-child transform propagation
+- [ ] Bind pose
+- [ ] Skinning
+- [ ] Animation keyframes
+- [ ] Quaternion interpolation
+- [ ] Head-turn experiment using SLERP
+- [ ] Arm and leg animation experiments
 
 This phase should combine several earlier concepts:
 
+```text
 Coordinate Spaces
 +
 Matrices
@@ -571,35 +507,35 @@ Hierarchy
 Interpolation
 =
 Skeletal Animation
+```
 
-Chapter 11 — Linear Motion
+---
+
+### Chapter 11 — Linear Motion
 
 The engine will then gain a basic physics/update layer.
 
 Planned concepts:
 
-Position
-
-Velocity
-
-Acceleration
-
-deltaTime
-
-Numerical integration
-
-Constant acceleration
-
-Circular motion
+- [ ] Position
+- [ ] Velocity
+- [ ] Acceleration
+- [ ] `deltaTime`
+- [ ] Numerical integration
+- [ ] Constant acceleration
+- [ ] Circular motion
 
 Possible component:
 
+```text
 PhysicsBody
 ├── Velocity
 └── Acceleration
+```
 
 Frame flow:
 
+```text
 Input
    ↓
 Physics Update
@@ -607,55 +543,42 @@ Physics Update
 Transform
    ↓
 Rendering
+```
 
 Experiments:
 
-Move an object using velocity
+- [ ] Move an object using velocity
+- [ ] Accelerate an object
+- [ ] Gravity-like falling
+- [ ] Circular movement
+- [ ] Compare frame-dependent and `deltaTime`-based movement
 
-Accelerate an object
+---
 
-Gravity-like falling
-
-Circular movement
-
-Compare frame-dependent and deltaTime-based movement
-
-Chapter 12 — Mechanics and Rigid Bodies
+### Chapter 12 — Mechanics and Rigid Bodies
 
 This phase expands the physics system.
 
 Planned concepts:
 
-Newton's laws
-
-Forces
-
-Gravity
-
-Friction
-
-Springs
-
-Momentum
-
-Center of mass
-
-Impulses
-
-Collision response
-
-Torque
-
-Angular velocity
-
-Rotational dynamics
-
-Rigid body simulation
-
-Rotation integration
+- [ ] Newton's laws
+- [ ] Forces
+- [ ] Gravity
+- [ ] Friction
+- [ ] Springs
+- [ ] Momentum
+- [ ] Center of mass
+- [ ] Impulses
+- [ ] Collision response
+- [ ] Torque
+- [ ] Angular velocity
+- [ ] Rotational dynamics
+- [ ] Rigid body simulation
+- [ ] Rotation integration
 
 Example:
 
+```text
 Force
   ↓
 Acceleration
@@ -663,9 +586,11 @@ Acceleration
 Velocity
   ↓
 Position
+```
 
 Rotational equivalent:
 
+```text
 Torque
    ↓
 Angular Acceleration
@@ -673,35 +598,38 @@ Angular Acceleration
 Angular Velocity
    ↓
 Quaternion Orientation
+```
 
 Possible test scene:
 
+```text
 Scene
 ├── Human
 ├── Ground
 ├── Ball
 └── Crate
+```
 
 Experiments may include falling objects, collisions, impulses, pushing objects, and rotating rigid bodies.
 
-Chapter 13 — Curves and Splines
+---
+
+### Chapter 13 — Curves and Splines
 
 Curves should also become visual engine tools rather than isolated equations.
 
 Planned concepts:
 
-Hermite curves
-
-Bézier curves
-
-Splines
-
-Catmull-Rom splines
+- [ ] Hermite curves
+- [ ] Bézier curves
+- [ ] Splines
+- [ ] Catmull-Rom splines
 
 Possible applications:
 
-Camera Paths
+#### Camera Paths
 
+```text
 Point A
    ↓
 Point B
@@ -709,26 +637,25 @@ Point B
 Point C
    ↓
 Point D
+```
 
 The camera smoothly follows the resulting curve.
 
-NPC Paths
+#### NPC Paths
 
 A character can follow a spline through the scene.
 
-Debug Curve Editor
+#### Debug Curve Editor
 
-Render control points
+- [ ] Render control points
+- [ ] Render curve
+- [ ] Move control points
+- [ ] Visualize tangent directions
+- [ ] Move camera or object along the curve
 
-Render curve
+---
 
-Move control points
-
-Visualize tangent directions
-
-Move camera or object along the curve
-
-Debug / Editor Tools
+### Debug / Editor Tools
 
 A full Unreal-style editor is not a goal.
 
@@ -736,6 +663,7 @@ A small internal editor/debug interface may be added after the renderer and scen
 
 Possible layout:
 
+```text
 -----------------------------------------
 | Scene Hierarchy |                     |
 |                 |                     |
@@ -749,35 +677,30 @@ Possible layout:
 | Rotation                              |
 | Scale                                 |
 -----------------------------------------
+```
 
 Planned tools:
 
-Scene hierarchy
-
-Entity selection
-
-Transform inspector
-
-Euler rotation fields
-
-Bounding-volume visualization
-
-Coordinate-axis visualization
-
-Ray visualization
-
-Physics debug information
-
-Curve control points
-
-Skeleton visualization
+- [ ] Scene hierarchy
+- [ ] Entity selection
+- [ ] Transform inspector
+- [ ] Euler rotation fields
+- [ ] Bounding-volume visualization
+- [ ] Coordinate-axis visualization
+- [ ] Ray visualization
+- [ ] Physics debug information
+- [ ] Curve control points
+- [ ] Skeleton visualization
 
 Internally the character may use quaternion orientation while the editor exposes Euler angles for readability.
 
-Intended Final Result
+---
+
+## Intended Final Result
 
 The project is expected to grow into a small educational engine containing systems similar to:
 
+```text
 Engine
 │
 ├── Core
@@ -830,75 +753,61 @@ Engine
     ├── Inspector
     ├── Debug Drawing
     └── Curve Editor
+```
 
 This architecture is a direction, not a requirement to build everything immediately.
 
-Current Status
+---
 
-The theoretical study has currently reached the end of Chapter 8: Orientation and Angular Displacement.
+## Current Status
+
+The theoretical study has currently reached the end of **Chapter 8: Orientation and Angular Displacement**.
 
 Topics already studied include:
 
-vectors;
-
-dot and cross products;
-
-coordinate spaces;
-
-basis vectors;
-
-matrices;
-
-affine transformations;
-
-homogeneous coordinates;
-
-perspective projection;
-
-polar coordinates;
-
-cylindrical coordinates;
-
-spherical coordinates;
-
-orientation;
-
-Euler angles;
-
-gimbal lock;
-
-axis-angle representation;
-
-exponential maps / rotation vectors;
-
-quaternions;
-
-quaternion multiplication;
-
-quaternion inverse;
-
-quaternion difference;
-
-quaternion interpolation;
-
-SLERP;
-
-conversions between Euler angles, matrices, and quaternions.
+- vectors;
+- dot and cross products;
+- coordinate spaces;
+- basis vectors;
+- matrices;
+- affine transformations;
+- homogeneous coordinates;
+- perspective projection;
+- polar coordinates;
+- cylindrical coordinates;
+- spherical coordinates;
+- orientation;
+- Euler angles;
+- gimbal lock;
+- axis-angle representation;
+- exponential maps / rotation vectors;
+- quaternions;
+- quaternion multiplication;
+- quaternion inverse;
+- quaternion difference;
+- quaternion interpolation;
+- SLERP;
+- conversions between Euler angles, matrices, and quaternions.
 
 The next major step is to begin implementing the engine instead of reading the rest of the book first.
 
-Learning Strategy Going Forward
+---
+
+## Learning Strategy Going Forward
 
 The remaining book should be studied in parallel with development.
 
 Instead of:
 
+```text
 Finish the entire book
         ↓
 Start engine
+```
 
 the project follows:
 
+```text
 Read
   ↓
 Implement
@@ -908,32 +817,30 @@ Visualize
 Experiment
   ↓
 Continue Reading
+```
 
 The engine itself becomes the notebook.
 
-Non-Goals
+---
 
-At least initially, this project is not trying to provide:
+## Non-Goals
 
-production-ready performance;
+At least initially, this project is **not** trying to provide:
 
-a professional editor;
-
-a complete ECS;
-
-networking;
-
-a commercial asset pipeline;
-
-Vulkan/OpenGL abstraction;
-
-AAA rendering;
-
-a replacement for an existing engine.
+- production-ready performance;
+- a professional editor;
+- a complete ECS;
+- networking;
+- a commercial asset pipeline;
+- Vulkan/OpenGL abstraction;
+- AAA rendering;
+- a replacement for an existing engine.
 
 Those may become future experiments, but they are not required to achieve the main learning goal.
 
-Why Build This?
+---
+
+## Why Build This?
 
 Using matrices, quaternions, interpolation, coordinate spaces, physics, and geometry only on paper makes them easy to forget.
 
