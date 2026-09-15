@@ -1,8 +1,33 @@
 #include <iostream>
 
 #include <engine/math/Vec2.hpp>
+#include <memory>
+#include <vector>
+#include <fstream>
+#include <SDL.h>
+#include <cstdint>
 
 #include <cmath>
+
+constexpr int windowWidth = 800;
+constexpr int windowHeight = 600;
+constexpr int bitsPerPixel = 32;
+constexpr int bytesPerPixel = bitsPerPixel / 8;
+constexpr std::uint32_t backgroundColor = 0xFF000000;
+constexpr std::uint32_t whiteColor = 0xFFFFFFFF;
+constexpr Uint32 frameDelayMilliseconds = 16;
+
+struct LifetimeLogger
+{
+    LifetimeLogger()
+    {
+        std::cout << "created" << '\n';
+    }
+    ~LifetimeLogger()
+    {
+        std::cout << "destroyed" << '\n';
+    }
+};
 
 double calculateArea(double width, double height)
 {
@@ -14,78 +39,99 @@ double calculatePerimeter(double width, double height)
     return 2 * (width + height);
 }
 
+void drawPixel(std::vector<std::uint32_t> &framebuffer, int width, int height, int x, int y, std::uint32_t color)
+{
+    if (x < 0 || x >= width || y < 0 || y >= height)
+    {
+        return;
+    }
+
+    const int index = y * width + x;
+    framebuffer[index] = color;
+}
+
 int main()
 {
-    double width = 0.0;
-    double height = 0.0;
-    const Vec2 firstVector{3.0, 4.0};
-    const Vec2 secondVector{4.0, 5.0};
-    const Vec2 right{1.0, 0.0};
-    const Vec2 up{0.0, 1.0};
-    const Vec2 left{-1.0, 0.0};
-    const Vec2 pointA{1.0, 2.0};
-    const Vec2 pointB{4.0, 6.0};
-    const double epsilon = 0.000000001;
-    const double floatingPointSum = 0.1 + 0.2;
-    const double absoluteDifference = std::abs(floatingPointSum - 0.3);
-    const bool approximateEquality = absoluteDifference <= epsilon;
-    const bool exactEquality = floatingPointSum == 0.3;
-    const Vec2 first{0.1 + 0.2, 0.3};
-    const Vec2 second{0.3, 0.3};
+    const int initResult = SDL_Init(SDL_INIT_VIDEO);
+    if (initResult != 0)
+    {
+        std::cout << "SDL initialization failed: " << SDL_GetError() << '\n';
+        return 1;
+    }
 
-    std::cout << "Enter width: ";
-    std::cin >> width;
-    std::cout << "Enter height: ";
-    std::cin >> height;
+    SDL_Window *window = SDL_CreateWindow(
+        "3D Engine",
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        windowWidth,
+        windowHeight,
+        0);
 
-    const double perimeter = calculatePerimeter(width, height);
-    const double area = calculateArea(width, height);
-    const Vec2 summedVector = firstVector + secondVector;
-    const Vec2 differenceVector = firstVector - secondVector;
-    const double firstVectorLength = firstVector.length();
-    const Vec2 normalizedFirstVector = firstVector.normalized();
-    const double normalizedFirstVectorLength = normalizedFirstVector.length();
-    const double dotProduct = firstVector.dot(secondVector);
-    const double axesDotProduct = right.dot(up);
-    const double oppositeDotProduct = right.dot(left);
-    const Vec2 multipliedVector = firstVector * 2.0;
-    const Vec2 dividedVector = firstVector / 2.0;
-    const Vec2 oppositeVector = -firstVector;
-    const Vec2 firstVectorProjectedOntoRight = firstVector.projectedOnto(right);
-    const Vec2 firstVectorProjectedOntoUp = firstVector.projectedOnto(up);
+    if (window == nullptr)
+    {
+        std::cout << "Window creation failed: " << SDL_GetError() << '\n';
+        SDL_Quit();
+        return 1;
+    }
 
-    std::cout << "Area: " << area << '\n';
-    std::cout << "Perimeter: " << perimeter << '\n';
-    std::cout << "First vector: (" << firstVector.x << ", " << firstVector.y << ")" << '\n';
-    std::cout << "First vector length: " << firstVectorLength << '\n';
+    SDL_Surface *windowSurface = SDL_GetWindowSurface(window);
 
-    std::cout << "Sum: (" << summedVector.x << ", " << summedVector.y << ")" << '\n';
-    std::cout << "Difference: (" << differenceVector.x << ", " << differenceVector.y << ")" << '\n';
+    if (windowSurface == nullptr)
+    {
+        std::cout << "Window surface creation failed: " << SDL_GetError() << '\n';
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return 1;
+    }
 
-    std::cout << "Multiplication: (" << multipliedVector.x << ", " << multipliedVector.y << ")" << '\n';
-    std::cout << "Multiplied vector length: " << multipliedVector.length() << '\n';
+    std::vector<std::uint32_t> framebuffer(windowWidth * windowHeight, backgroundColor);
 
-    std::cout << "Divided Vector: (" << dividedVector.x << ", " << dividedVector.y << ")" << '\n';
-    std::cout << "Divided vector length: " << dividedVector.length() << '\n';
+    drawPixel(framebuffer, windowWidth, windowHeight, windowWidth / 2, windowHeight / 2, whiteColor);
 
-    std::cout << "Opposite Vector: (" << oppositeVector.x << ", " << oppositeVector.y << ")" << '\n';
-    std::cout << "Opposite vector length: " << oppositeVector.length() << '\n';
+    std::uint32_t *framebufferPixels = framebuffer.data();
+    const int framebufferPitch = windowWidth * bytesPerPixel;
 
-    std::cout << "Normalized first vector: (" << normalizedFirstVector.x << ", " << normalizedFirstVector.y << ")" << '\n';
-    std::cout << "Normalized first vector length: " << normalizedFirstVectorLength << '\n';
+    SDL_Surface *framebufferSurface = SDL_CreateRGBSurfaceWithFormatFrom(
+        framebufferPixels,
+        windowWidth,
+        windowHeight,
+        bitsPerPixel,
+        framebufferPitch,
+        SDL_PIXELFORMAT_ARGB8888);
 
-    std::cout << "Distance between points A and B: " << pointA.distanceTo(pointB) << '\n';
+    if (framebufferSurface == nullptr)
+    {
+        std::cout << "Frame buffer surface creation failed: " << SDL_GetError() << '\n';
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return 1;
+    }
 
-    std::cout << "First vector projected onto vector Right: (" << firstVectorProjectedOntoRight.x << ", " << firstVectorProjectedOntoRight.y << ")" << '\n';
-    std::cout << "First vector projected onto vector Up: (" << firstVectorProjectedOntoUp.x << ", " << firstVectorProjectedOntoUp.y << ")" << '\n';
+    bool running = true;
 
-    std::cout << "Dot first and second vector: " << dotProduct << '\n';
-    std::cout << "Axes Dot product: " << axesDotProduct << '\n';
-    std::cout << "Opposite axes Dot product: " << oppositeDotProduct << '\n';
+    while (running)
+    {
+        SDL_Event event{};
+        while (SDL_PollEvent(&event))
+        {
+            if (event.type == SDL_QUIT)
+                running = false;
 
-    std::cout << std::boolalpha << "Exact equality: " << exactEquality << '\n';
-    std::cout << "Approximate equality: " << approximateEquality << '\n';
-    std::cout << "First vector approximately equals second? " << first.approximatelyEquals(second, epsilon) << '\n';
+            if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
+                running = false;
 
+            if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+            {
+                std::cout << "Mouse coordinates: (" << event.button.x << ", " << event.button.y << ")" << "\n";
+            }
+        }
+        SDL_BlitSurface(framebufferSurface, nullptr, windowSurface, nullptr);
+        SDL_UpdateWindowSurface(window);
+        SDL_Delay(frameDelayMilliseconds);
+    }
+
+    SDL_FreeSurface(framebufferSurface);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
     return 0;
 }
