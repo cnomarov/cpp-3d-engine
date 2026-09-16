@@ -14,3 +14,20 @@ target_compile_options(vec2-tests
 )
 
 add_test(NAME vec2-tests COMMAND vec2-tests)
+
+add_executable(software-renderer-tests renderer/SoftwareRendererTests.cpp)
+
+target_link_libraries(software-renderer-tests
+    PRIVATE
+        engine
+)
+
+target_compile_options(software-renderer-tests
+    PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Wconversion
+)
+
+add_test(NAME software-renderer-tests COMMAND software-renderer-tests)

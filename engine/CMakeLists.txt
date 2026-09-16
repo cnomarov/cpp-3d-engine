@@ -3,6 +3,7 @@ add_library(engine STATIC)
 target_sources(engine
     PRIVATE
         src/math/Vec2.cpp
+        src/renderer/SoftwareRenderer.cpp
 )
 
 target_include_directories(engine

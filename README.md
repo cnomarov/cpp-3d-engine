@@ -16,7 +16,7 @@ This project is a hands-on companion to *3D Math Primer for Graphics and Game De
 
 The project is intentionally educational rather than production-oriented. The goal is to implement the important math and engine systems manually, understand why they work, and immediately visualize each concept instead of leaving it as abstract theory.
 
-> **Current focus:** Chapter 8 is complete. The next milestone is a window, application loop, and software framebuffer.
+> **Current focus:** Phases 0 and 1 are complete. The next milestone is Phase 2, beginning with `Vec3`.
 
 ## Contents
 
@@ -104,14 +104,14 @@ The point is not to reinvent these libraries forever. The point is to understand
 
 Learn only the C++ required to build the project instead of studying the entire language before starting.
 
-- [ ] Project structure
-- [ ] Build system
-- [ ] Classes and structs
-- [ ] References and pointers
-- [ ] RAII and basic resource ownership
-- [ ] `std::vector`
-- [ ] File loading
-- [ ] Basic debugging
+- [x] Project structure
+- [x] Build system
+- [x] Classes and structs
+- [x] References and pointers
+- [x] RAII and basic resource ownership
+- [x] `std::vector`
+- [x] File loading
+- [x] Basic debugging
 
 ---
 
@@ -119,13 +119,13 @@ Learn only the C++ required to build the project instead of studying the entire 
 
 The first milestone is simply getting pixels onto the screen.
 
-- [ ] Create a window
-- [ ] Handle the application loop
-- [ ] Handle keyboard and mouse input
-- [ ] Create a software framebuffer
-- [ ] Draw a pixel
-- [ ] Draw a line
-- [ ] Draw a triangle
+- [x] Create a window
+- [x] Handle the application loop
+- [x] Handle keyboard and mouse input
+- [x] Create a software framebuffer
+- [x] Draw a pixel
+- [x] Draw a line
+- [x] Draw a triangle
 
 At this stage the engine does not need a real scene system.
 
@@ -151,14 +151,14 @@ Implement the mathematical foundation manually.
 
 #### Vectors
 
-- [ ] `Vec2`
+- [x] `Vec2`
 - [ ] `Vec3`
 - [ ] `Vec4`
-- [ ] Length
-- [ ] Normalization
-- [ ] Dot product
+- [x] Length
+- [x] Normalization
+- [x] Dot product
 - [ ] Cross product
-- [ ] Projection
+- [x] Projection
 
 #### Matrices
 
@@ -789,7 +789,16 @@ Topics already studied include:
 - SLERP;
 - conversions between Euler angles, matrices, and quaternions.
 
-The next major step is to begin implementing the engine instead of reading the rest of the book first.
+Implementation has completed the C++ foundation and the first visual milestone:
+
+- SDL2 window creation and an application loop;
+- keyboard and mouse events;
+- a CPU-owned software framebuffer;
+- pixel, DDA line, and triangle-outline drawing;
+- a standalone `SoftwareRenderer` with automated tests;
+- a tested `Vec2` implementation.
+
+The next implementation step is Phase 2: create `Vec3`, then extend the math library toward `Vec4`, matrices, transforms, and the first 3D rendering pipeline.
 
 ---
 
