@@ -31,3 +31,20 @@ target_compile_options(software-renderer-tests
 )
 
 add_test(NAME software-renderer-tests COMMAND software-renderer-tests)
+
+add_executable(vec3-tests math/Vec3Tests.cpp)
+
+target_link_libraries(vec3-tests
+    PRIVATE
+        engine
+)
+
+target_compile_options(vec3-tests
+    PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Wconversion
+)
+
+add_test(NAME vec3-tests COMMAND vec3-tests)
