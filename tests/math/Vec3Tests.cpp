@@ -156,6 +156,17 @@ void testDistance()
     assertApproximatelyEqual(actual, right.distanceTo(left), testEpsilon);
 }
 
+void testProjection()
+{
+    const Vec3 vector{3.0, 4.0, 5.0};
+    const Vec3 axis{0.0, 0.0, 2.0};
+
+    const Vec3 actual = vector.projectedOnto(axis);
+    const Vec3 expected{0.0, 0.0, 5.0};
+
+    assert(actual.approximatelyEquals(expected, testEpsilon));
+}
+
 int main()
 {
     testAddition();
@@ -170,5 +181,6 @@ int main()
     testDotProduct();
     testCrossProduct();
     testDistance();
+    testProjection();
     return 0;
 }

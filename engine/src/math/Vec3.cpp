@@ -80,3 +80,11 @@ double Vec3::distanceTo(const Vec3 &other) const
 {
     return (*this - other).length();
 }
+
+Vec3 Vec3::projectedOnto(const Vec3 &axis) const
+{
+    const double axisDot = axis.dot(axis);
+    assert(axisDot != 0.0);
+
+    return axis * (dot(axis) / axisDot);
+}

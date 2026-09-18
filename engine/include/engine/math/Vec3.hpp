@@ -16,5 +16,6 @@ struct Vec3
     double dot(const Vec3 &other) const;
     Vec3 cross(const Vec3 &other) const;
     double distanceTo(const Vec3 &other) const;
+    Vec3 projectedOnto(const Vec3 &axis) const;
     bool approximatelyEquals(const Vec3 &other, double epsilon) const;
 };
