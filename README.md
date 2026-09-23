@@ -16,7 +16,7 @@ This project is a hands-on companion to *3D Math Primer for Graphics and Game De
 
 The project is intentionally educational rather than production-oriented. The goal is to implement the important math and engine systems manually, understand why they work, and immediately visualize each concept instead of leaving it as abstract theory.
 
-> **Current focus:** Phases 0 and 1 are complete. The next milestone is Phase 2, beginning with `Vec3`.
+> **Current focus:** Phases 0 and 1 are complete. Phase 2 is in progress: `Vec3`, `Vec4`, `Mat3`, and the foundational `Mat4` operations are implemented and tested. The next step is composing scale, rotation, and translation transforms.
 
 ## Contents
 
@@ -152,26 +152,26 @@ Implement the mathematical foundation manually.
 #### Vectors
 
 - [x] `Vec2`
-- [ ] `Vec3`
-- [ ] `Vec4`
+- [x] `Vec3`
+- [x] `Vec4`
 - [x] Length
 - [x] Normalization
 - [x] Dot product
-- [ ] Cross product
+- [x] Cross product
 - [x] Projection
 
 #### Matrices
 
-- [ ] `Mat3`
-- [ ] `Mat4`
-- [ ] Matrix multiplication
-- [ ] Vector × matrix transformation
-- [ ] Translation
-- [ ] Rotation
-- [ ] Scaling
+- [x] `Mat3`
+- [x] `Mat4`
+- [x] Matrix multiplication
+- [x] Matrix × vector transformation
+- [x] Translation
+- [x] Rotation
+- [x] Scaling
 - [ ] Matrix inverse where needed
-- [ ] Transpose
-- [ ] Homogeneous coordinates
+- [x] Transpose
+- [x] Homogeneous coordinates
 
 #### Quaternions
 
@@ -789,16 +789,20 @@ Topics already studied include:
 - SLERP;
 - conversions between Euler angles, matrices, and quaternions.
 
-Implementation has completed the C++ foundation and the first visual milestone:
+Implementation has completed the C++ foundation, the first visual milestone, and the foundational vector and matrix layer:
 
 - SDL2 window creation and an application loop;
 - keyboard and mouse events;
 - a CPU-owned software framebuffer;
 - pixel, DDA line, and triangle-outline drawing;
 - a standalone `SoftwareRenderer` with automated tests;
-- a tested `Vec2` implementation.
+- tested `Vec2` and `Vec3` implementations;
+- `Vec4` point/direction construction using homogeneous `w` values;
+- tested `Mat3` identity, scaling, axis rotations, matrix/vector multiplication, matrix multiplication, and transpose;
+- tested foundational `Mat4` identity, scaling, axis rotations, translation, matrix/vector multiplication, matrix multiplication, and transpose;
+- translation behavior that moves points (`w = 1`) while leaving directions (`w = 0`) unchanged.
 
-The next implementation step is Phase 2: create `Vec3`, then extend the math library toward `Vec4`, matrices, transforms, and the first 3D rendering pipeline.
+The next implementation step is to compose scale, rotation, and translation as `T * R * S`, verify transformation order, and then continue Phase 2 toward quaternions before entering the first 3D rendering pipeline.
 
 ---
 

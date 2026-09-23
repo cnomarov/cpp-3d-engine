@@ -4,6 +4,9 @@ target_sources(engine
     PRIVATE
         src/math/Vec2.cpp
         src/math/Vec3.cpp
+        src/math/Vec4.cpp
+        src/math/Mat3.cpp
+        src/math/Mat4.cpp
         src/renderer/SoftwareRenderer.cpp
 )
 
