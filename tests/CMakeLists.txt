@@ -99,3 +99,20 @@ target_compile_options(mat4-tests
 )
 
 add_test(NAME mat4-tests COMMAND mat4-tests)
+
+add_executable(quaternion-tests math/QuaternionTests.cpp)
+
+target_link_libraries(quaternion-tests
+    PRIVATE
+        engine
+)
+
+target_compile_options(quaternion-tests
+    PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Wconversion
+)
+
+add_test(NAME quaternion-tests COMMAND quaternion-tests)

@@ -7,6 +7,7 @@ target_sources(engine
         src/math/Vec4.cpp
         src/math/Mat3.cpp
         src/math/Mat4.cpp
+        src/math/Quaternion.cpp
         src/renderer/SoftwareRenderer.cpp
 )
 
