@@ -8,9 +8,31 @@ Quaternion Quaternion::identity()
     return Quaternion{0.0, 0.0, 0.0, 1.0};
 }
 
+Quaternion Quaternion::fromAxisAngle(const Vec3 &axis, double radians)
+{
+    assert(axis.length() != 0);
+    const Vec3 normalizedAxis = axis.normalized();
+    const double halfRadians = radians / 2;
+
+    const double newX = normalizedAxis.x * std::sin(halfRadians);
+    const double newY = normalizedAxis.y * std::sin(halfRadians);
+    const double newZ = normalizedAxis.z * std::sin(halfRadians);
+    const double newW = std::cos(halfRadians);
+
+    return Quaternion{newX, newY, newZ, newW};
+}
+
 double Quaternion::length() const
 {
     return std::sqrt(x * x + y * y + z * z + w * w);
+}
+
+Vec3 Quaternion::rotated(const Vec3 &vector) const
+{
+    const Quaternion p{vector.x, vector.y, vector.z, 0};
+    const Quaternion result = (*this) * p * inverse();
+
+    return Vec3{result.x, result.y, result.z};
 }
 
 Quaternion Quaternion::normalized() const
@@ -32,6 +54,16 @@ Quaternion Quaternion::inverse() const
     assert(squaredLength != 0);
     const Quaternion conjugatedQuat = conjugated();
     return Quaternion{conjugatedQuat.x / squaredLength, conjugatedQuat.y / squaredLength, conjugatedQuat.z / squaredLength, conjugatedQuat.w / squaredLength};
+}
+
+Quaternion Quaternion::operator*(const Quaternion &other) const
+{
+    const double newX = w * other.x + x * other.w + y * other.z - z * other.y;
+    const double newY = w * other.y - x * other.z + y * other.w + z * other.x;
+    const double newZ = w * other.z + x * other.y - y * other.x + z * other.w;
+    const double newW = w * other.w - x * other.x - y * other.y - z * other.z;
+
+    return Quaternion{newX, newY, newZ, newW};
 }
 
 bool Quaternion::approximatelyEquals(const Quaternion &other, double epsilon) const
