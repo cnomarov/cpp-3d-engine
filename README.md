@@ -16,7 +16,7 @@ This project is a hands-on companion to *3D Math Primer for Graphics and Game De
 
 The project is intentionally educational rather than production-oriented. The goal is to implement the important math and engine systems manually, understand why they work, and immediately visualize each concept instead of leaving it as abstract theory.
 
-> **Current focus:** Phases 0 and 1 are complete. Phase 2 is in progress: vectors, foundational matrix operations, homogeneous transforms, and the core quaternion operations are implemented and tested. The next step is converting quaternions back to Euler angles.
+> **Current focus:** Phases 0, 1, and 2 are complete. The next step is Phase 3: building the first 3D transformation and wireframe rendering pipeline.
 
 ## Contents
 
@@ -169,7 +169,7 @@ Implement the mathematical foundation manually.
 - [x] Translation
 - [x] Rotation
 - [x] Scaling
-- [ ] Matrix inverse where needed
+- [x] Defer matrix inverse until a concrete camera/view use requires it
 - [x] Transpose
 - [x] Homogeneous coordinates
 
@@ -183,11 +183,12 @@ Implement the mathematical foundation manually.
 - [x] Rotate vectors with `q * p * q⁻¹`
 - [x] Axis-angle → quaternion
 - [x] Euler → quaternion
-- [ ] Quaternion → Euler
-- [ ] Quaternion → matrix
-- [ ] Matrix → quaternion
-- [ ] Quaternion difference
-- [ ] SLERP
+- [x] Quaternion → Euler
+- [x] Quaternion → matrix
+- [x] Matrix → quaternion
+- [x] Quaternion difference
+- [x] NLERP
+- [x] SLERP
 
 ---
 
@@ -790,20 +791,24 @@ Topics already studied include:
 - SLERP;
 - conversions between Euler angles, matrices, and quaternions.
 
-Implementation has completed the C++ foundation, the first visual milestone, and the foundational vector and matrix layer:
+Implementation has completed the C++ foundation, the first visual milestone, and the Phase 2 math library:
 
 - SDL2 window creation and an application loop;
 - keyboard and mouse events;
 - a CPU-owned software framebuffer;
 - pixel, DDA line, and triangle-outline drawing;
 - a standalone `SoftwareRenderer` with automated tests;
-- tested `Vec2` and `Vec3` implementations;
+- tested `Vec2`, `Vec3`, and `Vec4` implementations;
 - `Vec4` point/direction construction using homogeneous `w` values;
 - tested `Mat3` identity, scaling, axis rotations, matrix/vector multiplication, matrix multiplication, and transpose;
 - tested foundational `Mat4` identity, scaling, axis rotations, translation, matrix/vector multiplication, matrix multiplication, and transpose;
-- translation behavior that moves points (`w = 1`) while leaving directions (`w = 0`) unchanged.
+- translation behavior that moves points (`w = 1`) while leaving directions (`w = 0`) unchanged;
+- homogeneous transform composition in `T * R * S` order;
+- quaternion construction, normalization, conjugation, inversion, multiplication, and vector rotation;
+- conversions between axis-angle, Euler angles, matrices, and quaternions;
+- quaternion difference, NLERP, and SLERP with shortest-path handling.
 
-The next implementation step is to compose scale, rotation, and translation as `T * R * S`, verify transformation order, and then continue Phase 2 toward quaternions before entering the first 3D rendering pipeline.
+The next implementation step is Phase 3: transform 3D vertices through object, world, view, projection, and screen spaces, beginning with a wireframe rendering pipeline. Matrix inversion remains intentionally deferred until a concrete camera/view use requires it.
 
 ---
 
