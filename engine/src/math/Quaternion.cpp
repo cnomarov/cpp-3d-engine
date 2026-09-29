@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <algorithm>
 
 Quaternion Quaternion::identity()
 {
@@ -22,6 +23,15 @@ Quaternion Quaternion::fromAxisAngle(const Vec3 &axis, double radians)
     return Quaternion{newX, newY, newZ, newW};
 }
 
+Quaternion Quaternion::fromEulerXYZ(const Vec3 &radians)
+{
+    const Quaternion rotationX = Quaternion::fromAxisAngle({1.0, 0.0, 0.0}, radians.x);
+    const Quaternion rotationY = Quaternion::fromAxisAngle({0.0, 1.0, 0.0}, radians.y);
+    const Quaternion rotationZ = Quaternion::fromAxisAngle({0.0, 0.0, 1.0}, radians.z);
+
+    return rotationZ * rotationY * rotationX;
+}
+
 double Quaternion::length() const
 {
     return std::sqrt(x * x + y * y + z * z + w * w);
@@ -33,6 +43,18 @@ Vec3 Quaternion::rotated(const Vec3 &vector) const
     const Quaternion result = (*this) * p * inverse();
 
     return Vec3{result.x, result.y, result.z};
+}
+
+Vec3 Quaternion::toEulerXYZ() const
+{
+    const Quaternion normalizedQuat = normalized();
+    const double radiansX = std::atan2(2.0 * (normalizedQuat.w * normalizedQuat.x + normalizedQuat.y * normalizedQuat.z), 1.0 - 2.0 * (normalizedQuat.x * normalizedQuat.x + normalizedQuat.y * normalizedQuat.y));
+    const double sinY = 2.0 * (normalizedQuat.w * normalizedQuat.y - normalizedQuat.z * normalizedQuat.x);
+    const double clampedSinY = std::clamp(sinY, -1.0, 1.0);
+    const double radiansY = std::asin(clampedSinY);
+    const double radiansZ = std::atan2(2.0 * (normalizedQuat.w * normalizedQuat.z + normalizedQuat.x * normalizedQuat.y), 1.0 - 2.0 * (normalizedQuat.y * normalizedQuat.y + normalizedQuat.z * normalizedQuat.z));
+
+    return Vec3{radiansX, radiansY, radiansZ};
 }
 
 Quaternion Quaternion::normalized() const

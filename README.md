@@ -16,7 +16,7 @@ This project is a hands-on companion to *3D Math Primer for Graphics and Game De
 
 The project is intentionally educational rather than production-oriented. The goal is to implement the important math and engine systems manually, understand why they work, and immediately visualize each concept instead of leaving it as abstract theory.
 
-> **Current focus:** Phases 0 and 1 are complete. Phase 2 is in progress: `Vec3`, `Vec4`, `Mat3`, and the foundational `Mat4` operations are implemented and tested. The next step is composing scale, rotation, and translation transforms.
+> **Current focus:** Phases 0 and 1 are complete. Phase 2 is in progress: vectors, foundational matrix operations, homogeneous transforms, and the core quaternion operations are implemented and tested. The next step is converting quaternions back to Euler angles.
 
 ## Contents
 
@@ -175,13 +175,14 @@ Implement the mathematical foundation manually.
 
 #### Quaternions
 
-- [ ] Quaternion representation
-- [ ] Normalize
-- [ ] Conjugate
-- [ ] Inverse
-- [ ] Quaternion multiplication
-- [ ] Axis-angle → quaternion
-- [ ] Euler → quaternion
+- [x] Quaternion representation
+- [x] Normalize
+- [x] Conjugate
+- [x] Inverse
+- [x] Quaternion multiplication
+- [x] Rotate vectors with `q * p * q⁻¹`
+- [x] Axis-angle → quaternion
+- [x] Euler → quaternion
 - [ ] Quaternion → Euler
 - [ ] Quaternion → matrix
 - [ ] Matrix → quaternion

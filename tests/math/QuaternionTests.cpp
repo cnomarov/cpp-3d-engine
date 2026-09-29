@@ -29,6 +29,39 @@ void testFromAxisAngle()
     assert(actual.approximatelyEquals(expected, testEpsilon));
 }
 
+void testFromEulerXYZ()
+{
+    const Vec3 radians{std::numbers::pi / 2, 0.0, std::numbers::pi / 4};
+    const Quaternion actual = Quaternion::fromEulerXYZ(radians);
+
+    const double sinPiOverEight = std::sin(std::numbers::pi / 8.0);
+    const double cosPiOverEight = std::cos(std::numbers::pi / 8.0);
+    const double sqrtHalf = std::sqrt(0.5);
+
+    const Quaternion expected{
+        cosPiOverEight * sqrtHalf,
+        sinPiOverEight * sqrtHalf,
+        sinPiOverEight * sqrtHalf,
+        cosPiOverEight * sqrtHalf,
+    };
+
+    assert(actual.approximatelyEquals(expected, testEpsilon));
+}
+
+void testToEulerXYZ()
+{
+    const Vec3 expected{
+        std::numbers::pi / 3.0,
+        std::numbers::pi / 6.0,
+        std::numbers::pi / 4.0,
+    };
+    const Quaternion quaternion = Quaternion::fromEulerXYZ(expected);
+
+    const Vec3 actual = quaternion.toEulerXYZ();
+
+    assert(actual.approximatelyEquals(expected, testEpsilon));
+}
+
 void testRotatedVector()
 {
     const Quaternion rotation = Quaternion::fromAxisAngle({0.0, 0.0, 1.0}, std::numbers::pi / 2.0);
@@ -38,6 +71,22 @@ void testRotatedVector()
     const Vec3 expected{0.0, 1.0, 0.0};
 
     assert(actual.approximatelyEquals(expected, testEpsilon));
+}
+
+void testRotationComposition()
+{
+    const Quaternion rotationX = Quaternion::fromAxisAngle({1.0, 0.0, 0.0}, std::numbers::pi / 2.0);
+    const Quaternion rotationZ = Quaternion::fromAxisAngle({0.0, 0.0, 1.0}, std::numbers::pi / 2.0);
+    const Vec3 initialVector{1.0, 0.0, 0.0};
+
+    const Quaternion rotationXZ = rotationZ * rotationX;
+    const Quaternion rotationZX = rotationX * rotationZ;
+
+    const Vec3 vectorXZ = rotationXZ.rotated(initialVector);
+    const Vec3 vectorZX = rotationZX.rotated(initialVector);
+
+    assert(vectorXZ.approximatelyEquals({0.0, 1.0, 0.0}, testEpsilon));
+    assert(vectorZX.approximatelyEquals({0.0, 0.0, 1.0}, testEpsilon));
 }
 
 void testLength()
@@ -116,7 +165,10 @@ int main()
 {
     testIdentity();
     testFromAxisAngle();
+    testFromEulerXYZ();
+    testToEulerXYZ();
     testRotatedVector();
+    testRotationComposition();
     testLength();
     testNormalization();
     testConjugated();

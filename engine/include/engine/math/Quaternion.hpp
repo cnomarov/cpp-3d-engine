@@ -11,8 +11,10 @@ struct Quaternion
 
     static Quaternion identity();
     static Quaternion fromAxisAngle(const Vec3 &axis, double radians);
+    static Quaternion fromEulerXYZ(const Vec3 &radians);
     double length() const;
     Vec3 rotated(const Vec3 &vector) const;
+    Vec3 toEulerXYZ() const;
     Quaternion normalized() const;
     Quaternion conjugated() const;
     Quaternion inverse() const;
