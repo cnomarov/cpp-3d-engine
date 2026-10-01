@@ -4,6 +4,10 @@
 #include <SDL.h>
 #include <cstdint>
 
+#include <engine/math/Quaternion.hpp>
+#include <algorithm>
+#include <cmath>
+
 constexpr int windowWidth = 800;
 constexpr int windowHeight = 600;
 constexpr int bitsPerPixel = 32;
@@ -48,8 +52,6 @@ int main()
 
     SoftwareRenderer renderer{windowWidth, windowHeight, backgroundColor};
 
-    renderer.drawPixel({windowWidth / 2, windowHeight / 2}, whiteColor);
-
     std::uint32_t *framebufferPixels = renderer.data();
     const int framebufferPitch = windowWidth * bytesPerPixel;
 
@@ -68,8 +70,6 @@ int main()
         SDL_Quit();
         return 1;
     }
-
-    renderer.drawTriangleOutline({400, 100}, {150, 500}, {650, 500}, whiteColor);
 
     bool running = true;
 
@@ -90,6 +90,26 @@ int main()
                 std::cout << "Mouse coordinates: (" << event.button.x << ", " << event.button.y << ")" << "\n";
             }
         }
+
+        std::fill_n(renderer.data(), windowWidth * windowHeight, backgroundColor);
+
+        const double seconds = static_cast<double>(SDL_GetTicks()) / 1000.0;
+
+        const Quaternion rotation = Quaternion::fromAxisAngle({0.0, 0.0, 1.0}, seconds);
+        const Vec3 initialDirection{1.0, 0.0, 0.0};
+        const Vec3 rotatedDirection = rotation.rotated(initialDirection);
+
+        const ScreenPoint center{
+            windowWidth / 2,
+            windowHeight / 2};
+
+        const double arrowLength = 150.0;
+
+        const int endX = center.x + static_cast<int>(std::round(rotatedDirection.x * arrowLength));
+        const int endY = center.y - static_cast<int>(std::round(rotatedDirection.y * arrowLength));
+        const ScreenPoint end{endX, endY};
+        renderer.drawLine(center, end, whiteColor);
+
         SDL_BlitSurface(framebufferSurface, nullptr, windowSurface, nullptr);
         SDL_UpdateWindowSurface(window);
         SDL_Delay(frameDelayMilliseconds);
