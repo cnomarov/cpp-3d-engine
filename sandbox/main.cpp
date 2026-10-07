@@ -1,10 +1,13 @@
 #include <iostream>
 
+#include <engine/math/Quaternion.hpp>
 #include <engine/renderer/SoftwareRenderer.hpp>
+#include <engine/math/Mat4.hpp>
+#include <engine/math/Vec2.hpp>
 #include <SDL.h>
 #include <cstdint>
+#include <array>
 
-#include <engine/math/Quaternion.hpp>
 #include <algorithm>
 #include <cmath>
 
@@ -15,6 +18,12 @@ constexpr int bytesPerPixel = bitsPerPixel / 8;
 constexpr std::uint32_t backgroundColor = 0xFF000000;
 constexpr std::uint32_t whiteColor = 0xFFFFFFFF;
 constexpr Uint32 frameDelayMilliseconds = 16;
+
+struct Edge
+{
+    std::size_t start;
+    std::size_t end;
+};
 
 int main()
 {
@@ -71,6 +80,76 @@ int main()
         return 1;
     }
 
+    const std::array<Vec3, 8> cubeVertices{
+        Vec3{-1.0, -1.0, -1.0},
+        Vec3{1.0, -1.0, -1.0},
+        Vec3{1.0, 1.0, -1.0},
+        Vec3{-1.0, 1.0, -1.0},
+        Vec3{-1.0, -1.0, 1.0},
+        Vec3{1.0, -1.0, 1.0},
+        Vec3{1.0, 1.0, 1.0},
+        Vec3{-1.0, 1.0, 1.0},
+    };
+
+    const std::array<Edge, 4> nearFaceEdges{
+        Edge{0, 1},
+        Edge{1, 2},
+        Edge{2, 3},
+        Edge{3, 0}};
+
+    const Mat4 modelMatrix = Mat4::translation({2.0, 3.0, 4.0}) * Mat4::rotationY(0.5);
+
+    const Vec3 cameraPosition{2.0, 3.0, 0.0};
+    const Mat4 viewMatrix = Mat4::translation(-cameraPosition);
+
+    std::array<Vec4, 8> cubeWorldVertices{};
+    std::array<Vec4, 8> cubeViewVertices{};
+    std::array<Vec2, 8> cubeProjectedVertices{};
+    std::array<ScreenPoint, 8> cubeScreenVertices{};
+
+    const ScreenPoint center{
+        windowWidth / 2,
+        windowHeight / 2};
+    const double projectionScale = 300.0;
+
+    // cube
+
+    for (std::size_t index = 0; index < cubeVertices.size(); ++index)
+    {
+        const Vec4 objectVertex = Vec4::fromPoint(cubeVertices[index]);
+        const Vec4 worldVertex = modelMatrix * objectVertex;
+        cubeWorldVertices[index] = worldVertex;
+    }
+
+    for (std::size_t index = 0; index < cubeWorldVertices.size(); ++index)
+    {
+        const Vec4 viewVertex = viewMatrix * cubeWorldVertices[index];
+        cubeViewVertices[index] = viewVertex;
+    }
+
+    for (std::size_t index = 0; index < cubeViewVertices.size(); ++index)
+    {
+        const double projectedX = cubeViewVertices[index].x / cubeViewVertices[index].z;
+        const double projectedY = cubeViewVertices[index].y / cubeViewVertices[index].z;
+        cubeProjectedVertices[index] = {projectedX, projectedY};
+    }
+
+    for (std::size_t index = 0; index < cubeProjectedVertices.size(); ++index)
+    {
+        const ScreenPoint screenPoint{
+            center.x + static_cast<int>(std::round(cubeProjectedVertices[index].x * projectionScale)),
+            center.y - static_cast<int>(std::round(cubeProjectedVertices[index].y * projectionScale)),
+        };
+        cubeScreenVertices[index] = screenPoint;
+    }
+
+    // console results
+
+    for (const ScreenPoint &point : cubeScreenVertices)
+    {
+        std::cout << point.x << ' ' << point.y << '\n';
+    }
+
     bool running = true;
 
     while (running)
@@ -93,22 +172,29 @@ int main()
 
         std::fill_n(renderer.data(), windowWidth * windowHeight, backgroundColor);
 
-        const double seconds = static_cast<double>(SDL_GetTicks()) / 1000.0;
+        for (const Edge edge : nearFaceEdges)
+        {
+            renderer.drawLine(
+                cubeScreenVertices[edge.start],
+                cubeScreenVertices[edge.end],
+                whiteColor);
+        }
 
-        const Quaternion rotation = Quaternion::fromAxisAngle({0.0, 0.0, 1.0}, seconds);
-        const Vec3 initialDirection{1.0, 0.0, 0.0};
-        const Vec3 rotatedDirection = rotation.rotated(initialDirection);
+        for (const Edge edge : nearFaceEdges)
+        {
+            renderer.drawLine(
+                cubeScreenVertices[edge.start + 4],
+                cubeScreenVertices[edge.end + 4],
+                whiteColor);
+        }
 
-        const ScreenPoint center{
-            windowWidth / 2,
-            windowHeight / 2};
-
-        const double arrowLength = 150.0;
-
-        const int endX = center.x + static_cast<int>(std::round(rotatedDirection.x * arrowLength));
-        const int endY = center.y - static_cast<int>(std::round(rotatedDirection.y * arrowLength));
-        const ScreenPoint end{endX, endY};
-        renderer.drawLine(center, end, whiteColor);
+        for (std::size_t index = 0; index < 4; ++index)
+        {
+            renderer.drawLine(
+                cubeScreenVertices[index],
+                cubeScreenVertices[index + 4],
+                whiteColor);
+        }
 
         SDL_BlitSurface(framebufferSurface, nullptr, windowSurface, nullptr);
         SDL_UpdateWindowSurface(window);
