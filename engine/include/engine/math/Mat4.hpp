@@ -28,6 +28,10 @@ struct Mat4
     static Mat4 rotationX(double radians);
     static Mat4 rotationY(double radians);
     static Mat4 translation(const Vec3 &offset);
+    static Mat4 perspective(double verticalFovRadians,
+                            double aspectRatio,
+                            double nearPlane,
+                            double farPlane);
     Vec4 operator*(const Vec4 &value) const;
     Mat4 operator*(const Mat4 &other) const;
     Mat4 transposed() const;

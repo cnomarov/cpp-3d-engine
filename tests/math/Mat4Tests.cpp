@@ -203,6 +203,25 @@ void testTransformComposition()
     assertVec4ApproximatelyEquals(actual, expected);
 }
 
+void testPerspectiveMapsDepthRange()
+{
+    const double verticalFovRadians = std::numbers::pi / 2.0;
+    const double aspectRatio = 1.0;
+    const double nearPlane = 1.0;
+    const double farPlane = 10.0;
+    const Mat4 projection = Mat4::perspective(verticalFovRadians, aspectRatio, nearPlane, farPlane);
+    const Vec4 nearPoint = Vec4::fromPoint({0.0, 0.0, nearPlane});
+    const Vec4 farPoint = Vec4::fromPoint({0.0, 0.0, farPlane});
+
+    const Vec4 nearClipVertex = projection * nearPoint;
+    const Vec4 farClipVertex = projection * farPoint;
+    const double nearProjectedZ = nearClipVertex.z / nearClipVertex.w;
+    const double farProjectedZ = farClipVertex.z / farClipVertex.w;
+
+    assertApproximatelyEqual(nearProjectedZ, 0.0);
+    assertApproximatelyEqual(farProjectedZ, 1.0);
+}
+
 int main()
 {
     testIdentity();
@@ -215,5 +234,6 @@ int main()
     testMatrixMultiplication();
     testTransposed();
     testTransformComposition();
+    testPerspectiveMapsDepthRange();
     return 0;
 }

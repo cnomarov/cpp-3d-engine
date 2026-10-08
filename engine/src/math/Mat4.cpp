@@ -80,6 +80,27 @@ Mat4 Mat4::translation(const Vec3 &offset)
     // clang-format on
 }
 
+Mat4 Mat4::perspective(double verticalFovRadians,
+                       double aspectRatio,
+                       double nearPlane,
+                       double farPlane)
+{
+    const double yScale = 1.0 / std::tan(verticalFovRadians / 2.0);
+    const double xScale = yScale / aspectRatio;
+
+    const double zScale = farPlane / (farPlane - nearPlane);
+    const double zOffset = -nearPlane * farPlane / (farPlane - nearPlane);
+
+    // clang-format off
+    return Mat4{
+        xScale, 0.0, 0.0, 0.0,
+        0.0, yScale, 0.0, 0.0,
+        0.0,    0.0, zScale, zOffset,
+        0.0,    0.0, 1.0, 0.0
+    };
+    // clang-format on
+}
+
 Vec4 Mat4::operator*(const Vec4 &value) const
 {
     return Vec4{

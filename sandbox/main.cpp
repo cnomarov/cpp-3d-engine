@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <numbers>
 
 constexpr int windowWidth = 800;
 constexpr int windowHeight = 600;
@@ -102,6 +103,14 @@ int main()
     const Vec3 cameraPosition{2.0, 3.0, 0.0};
     const Mat4 viewMatrix = Mat4::translation(-cameraPosition);
 
+    const double verticalFovRadians = std::numbers::pi / 2;
+    const double aspectRatio = static_cast<double>(windowWidth) / static_cast<double>(windowHeight);
+
+    const double nearPlane = 0.1;
+    const double farPlane = 100.0;
+
+    const Mat4 projectionMatrix = Mat4::perspective(verticalFovRadians, aspectRatio, nearPlane, farPlane);
+
     std::array<Vec4, 8> cubeWorldVertices{};
     std::array<Vec4, 8> cubeViewVertices{};
     std::array<Vec2, 8> cubeProjectedVertices{};
@@ -110,7 +119,6 @@ int main()
     const ScreenPoint center{
         windowWidth / 2,
         windowHeight / 2};
-    const double projectionScale = 300.0;
 
     // cube
 
@@ -129,16 +137,17 @@ int main()
 
     for (std::size_t index = 0; index < cubeViewVertices.size(); ++index)
     {
-        const double projectedX = cubeViewVertices[index].x / cubeViewVertices[index].z;
-        const double projectedY = cubeViewVertices[index].y / cubeViewVertices[index].z;
+        const Vec4 clipVertex = projectionMatrix * cubeViewVertices[index];
+        const double projectedX = clipVertex.x / clipVertex.w;
+        const double projectedY = clipVertex.y / clipVertex.w;
         cubeProjectedVertices[index] = {projectedX, projectedY};
     }
 
     for (std::size_t index = 0; index < cubeProjectedVertices.size(); ++index)
     {
         const ScreenPoint screenPoint{
-            center.x + static_cast<int>(std::round(cubeProjectedVertices[index].x * projectionScale)),
-            center.y - static_cast<int>(std::round(cubeProjectedVertices[index].y * projectionScale)),
+            center.x + static_cast<int>(std::round(cubeProjectedVertices[index].x * static_cast<double>(windowWidth) / 2.0)),
+            center.y - static_cast<int>(std::round(cubeProjectedVertices[index].y * static_cast<double>(windowHeight) / 2.0)),
         };
         cubeScreenVertices[index] = screenPoint;
     }

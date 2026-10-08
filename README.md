@@ -16,7 +16,7 @@ This project is a hands-on companion to *3D Math Primer for Graphics and Game De
 
 The project is intentionally educational rather than production-oriented. The goal is to implement the important math and engine systems manually, understand why they work, and immediately visualize each concept instead of leaving it as abstract theory.
 
-> **Current focus:** Phases 0, 1, and 2 are complete. The next step is Phase 3: building the first 3D transformation and wireframe rendering pipeline.
+> **Current focus:** Phases 0, 1, 2, and 3 are complete. The next step is Phase 4: building a controllable perspective camera.
 
 ## Contents
 
@@ -208,13 +208,13 @@ Projection
 Screen Space
 ```
 
-- [ ] 3D vertices
-- [ ] Model matrix
-- [ ] View matrix
-- [ ] Projection matrix
-- [ ] Perspective divide
-- [ ] Viewport transformation
-- [ ] Wireframe mesh rendering
+- [x] 3D vertices
+- [x] Model matrix
+- [x] View matrix
+- [x] Projection matrix
+- [x] Perspective divide
+- [x] Viewport transformation
+- [x] Wireframe mesh rendering
 
 A cube or simple primitive may be used temporarily here because it is useful for debugging projection errors.
 
@@ -791,7 +791,7 @@ Topics already studied include:
 - SLERP;
 - conversions between Euler angles, matrices, and quaternions.
 
-Implementation has completed the C++ foundation, the first visual milestone, and the Phase 2 math library:
+Implementation has completed the C++ foundation, the first visual milestone, the Phase 2 math library, and the Phase 3 rendering pipeline:
 
 - SDL2 window creation and an application loop;
 - keyboard and mouse events;
@@ -806,9 +806,14 @@ Implementation has completed the C++ foundation, the first visual milestone, and
 - homogeneous transform composition in `T * R * S` order;
 - quaternion construction, normalization, conjugation, inversion, multiplication, and vector rotation;
 - conversions between axis-angle, Euler angles, matrices, and quaternions;
-- quaternion difference, NLERP, and SLERP with shortest-path handling.
+- quaternion difference, NLERP, and SLERP with shortest-path handling;
+- a complete `object → world → view → projection → screen` transformation pipeline;
+- a wireframe cube rendered from eight 3D vertices and twelve edges;
+- perspective projection using vertical FOV, aspect ratio, and near/far planes;
+- perspective divide and viewport transformation into framebuffer coordinates;
+- `Mat4::perspective()` with automated checks that near and far map to normalized depths `0` and `1`.
 
-The next implementation step is Phase 3: transform 3D vertices through object, world, view, projection, and screen spaces, beginning with a wireframe rendering pipeline. Matrix inversion remains intentionally deferred until a concrete camera/view use requires it.
+The next implementation step is Phase 4: replace the hardcoded camera translation with a controllable perspective camera. Matrix inversion remains intentionally deferred until the camera's position and orientation require a general view-matrix construction.
 
 ---
 
