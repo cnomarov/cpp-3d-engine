@@ -98,66 +98,31 @@ int main()
         Edge{2, 3},
         Edge{3, 0}};
 
-    const Mat4 modelMatrix = Mat4::translation({2.0, 3.0, 4.0}) * Mat4::rotationY(0.5);
-
-    const Vec3 cameraPosition{2.0, 3.0, 0.0};
-    const Mat4 viewMatrix = Mat4::translation(-cameraPosition);
-
-    const double verticalFovRadians = std::numbers::pi / 2;
-    const double aspectRatio = static_cast<double>(windowWidth) / static_cast<double>(windowHeight);
-
-    const double nearPlane = 0.1;
-    const double farPlane = 100.0;
-
-    const Mat4 projectionMatrix = Mat4::perspective(verticalFovRadians, aspectRatio, nearPlane, farPlane);
-
     std::array<Vec4, 8> cubeWorldVertices{};
     std::array<Vec4, 8> cubeViewVertices{};
     std::array<Vec2, 8> cubeProjectedVertices{};
     std::array<ScreenPoint, 8> cubeScreenVertices{};
 
+    double cubeYawRadians = 0.5;
+    double cubePitchRadians = 0.0;
+    const double mouseSensitivity = 0.01;
+
+    const Vec3 cameraPosition{2.0, 3.0, 0.0};
+    const Mat4 viewMatrix = Mat4::translation(-cameraPosition);
+
+    double verticalFovRadians = std::numbers::pi / 2;
+    const double zoomStep = std::numbers::pi / 36;
+    const double minFov = std::numbers::pi / 9;
+    const double maxFov = std::numbers::pi * (2.0 / 3.0);
+
+    const double aspectRatio = static_cast<double>(windowWidth) / static_cast<double>(windowHeight);
+
+    const double nearPlane = 0.1;
+    const double farPlane = 100.0;
+
     const ScreenPoint center{
         windowWidth / 2,
         windowHeight / 2};
-
-    // cube
-
-    for (std::size_t index = 0; index < cubeVertices.size(); ++index)
-    {
-        const Vec4 objectVertex = Vec4::fromPoint(cubeVertices[index]);
-        const Vec4 worldVertex = modelMatrix * objectVertex;
-        cubeWorldVertices[index] = worldVertex;
-    }
-
-    for (std::size_t index = 0; index < cubeWorldVertices.size(); ++index)
-    {
-        const Vec4 viewVertex = viewMatrix * cubeWorldVertices[index];
-        cubeViewVertices[index] = viewVertex;
-    }
-
-    for (std::size_t index = 0; index < cubeViewVertices.size(); ++index)
-    {
-        const Vec4 clipVertex = projectionMatrix * cubeViewVertices[index];
-        const double projectedX = clipVertex.x / clipVertex.w;
-        const double projectedY = clipVertex.y / clipVertex.w;
-        cubeProjectedVertices[index] = {projectedX, projectedY};
-    }
-
-    for (std::size_t index = 0; index < cubeProjectedVertices.size(); ++index)
-    {
-        const ScreenPoint screenPoint{
-            center.x + static_cast<int>(std::round(cubeProjectedVertices[index].x * static_cast<double>(windowWidth) / 2.0)),
-            center.y - static_cast<int>(std::round(cubeProjectedVertices[index].y * static_cast<double>(windowHeight) / 2.0)),
-        };
-        cubeScreenVertices[index] = screenPoint;
-    }
-
-    // console results
-
-    for (const ScreenPoint &point : cubeScreenVertices)
-    {
-        std::cout << point.x << ' ' << point.y << '\n';
-    }
 
     bool running = true;
 
@@ -177,9 +142,58 @@ int main()
                 renderer.drawPixel({event.button.x, event.button.y}, whiteColor);
                 std::cout << "Mouse coordinates: (" << event.button.x << ", " << event.button.y << ")" << "\n";
             }
+
+            if (event.type == SDL_MOUSEMOTION && (event.motion.state & SDL_BUTTON_LMASK) != 0)
+            {
+                cubeYawRadians += static_cast<double>(event.motion.xrel) * mouseSensitivity;
+                cubePitchRadians += static_cast<double>(event.motion.yrel) * mouseSensitivity;
+            }
+
+            if (event.type == SDL_MOUSEWHEEL)
+            {
+                verticalFovRadians = std::clamp(verticalFovRadians - static_cast<double>(event.wheel.y) * zoomStep, minFov, maxFov);
+            }
         }
 
         std::fill_n(renderer.data(), windowWidth * windowHeight, backgroundColor);
+
+        // cube matrices
+
+        const Mat4 modelMatrix = Mat4::translation({2.0, 3.0, 4.0}) * Mat4::rotationY(cubeYawRadians) * Mat4::rotationX(cubePitchRadians);
+        const Mat4 projectionMatrix = Mat4::perspective(verticalFovRadians, aspectRatio, nearPlane, farPlane);
+
+        const Quaternion cubeOrientation = Quaternion::fromEulerXYZ({cubePitchRadians, cubeYawRadians, 0.0});
+        // cube view operations
+
+        for (std::size_t index = 0; index < cubeVertices.size(); ++index)
+        {
+            const Vec4 objectVertex = Vec4::fromPoint(cubeVertices[index]);
+            const Vec4 worldVertex = modelMatrix * objectVertex;
+            cubeWorldVertices[index] = worldVertex;
+        }
+
+        for (std::size_t index = 0; index < cubeWorldVertices.size(); ++index)
+        {
+            const Vec4 viewVertex = viewMatrix * cubeWorldVertices[index];
+            cubeViewVertices[index] = viewVertex;
+        }
+
+        for (std::size_t index = 0; index < cubeViewVertices.size(); ++index)
+        {
+            const Vec4 clipVertex = projectionMatrix * cubeViewVertices[index];
+            const double projectedX = clipVertex.x / clipVertex.w;
+            const double projectedY = clipVertex.y / clipVertex.w;
+            cubeProjectedVertices[index] = {projectedX, projectedY};
+        }
+
+        for (std::size_t index = 0; index < cubeProjectedVertices.size(); ++index)
+        {
+            const ScreenPoint screenPoint{
+                center.x + static_cast<int>(std::round(cubeProjectedVertices[index].x * static_cast<double>(windowWidth) / 2.0)),
+                center.y - static_cast<int>(std::round(cubeProjectedVertices[index].y * static_cast<double>(windowHeight) / 2.0)),
+            };
+            cubeScreenVertices[index] = screenPoint;
+        }
 
         for (const Edge edge : nearFaceEdges)
         {

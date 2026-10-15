@@ -9,4 +9,5 @@ enable_testing()
 
 add_subdirectory(engine)
 add_subdirectory(sandbox)
+add_subdirectory(demos)
 add_subdirectory(tests)
