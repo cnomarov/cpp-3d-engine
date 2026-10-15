@@ -1,4 +1,5 @@
 #include <engine/math/Mat4.hpp>
+#include <engine/math/Quaternion.hpp>
 #include <engine/math/Vec2.hpp>
 #include <engine/renderer/SoftwareRenderer.hpp>
 
@@ -96,9 +97,8 @@ int main()
     std::array<Vec2, 8> cubeProjectedVertices{};
     std::array<ScreenPoint, 8> cubeScreenVertices{};
 
-    double cubeYawRadians = 0.5;
-    double cubePitchRadians = 0.0;
     const double mouseSensitivity = 0.01;
+    Quaternion cubeOrientation = Quaternion::fromAxisAngle({0.0, 1.0, 0.0}, 0.5);
 
     const Vec3 cameraPosition{2.0, 3.0, 0.0};
     const Mat4 viewMatrix = Mat4::translation(-cameraPosition);
@@ -127,8 +127,16 @@ int main()
 
             if (event.type == SDL_MOUSEMOTION && (event.motion.state & SDL_BUTTON_LMASK) != 0)
             {
-                cubeYawRadians += static_cast<double>(event.motion.xrel) * mouseSensitivity;
-                cubePitchRadians += static_cast<double>(event.motion.yrel) * mouseSensitivity;
+                const double deltaYawRadians = static_cast<double>(event.motion.xrel) * mouseSensitivity;
+                const double deltaPitchRadians = static_cast<double>(event.motion.yrel) * mouseSensitivity;
+                const Quaternion deltaPitch = Quaternion::fromAxisAngle({1.0, 0.0, 0.0}, deltaPitchRadians);
+                const Quaternion deltaYaw = Quaternion::fromAxisAngle({0.0, 1.0, 0.0}, deltaYawRadians);
+                cubeOrientation = (deltaYaw * cubeOrientation * deltaPitch).normalized();
+            }
+
+            if (event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_R)
+            {
+                cubeOrientation = cubeOrientation.slerpTo(Quaternion::identity(), 0.5);
             }
 
             if (event.type == SDL_MOUSEWHEEL)
@@ -142,14 +150,13 @@ int main()
 
         std::fill_n(renderer.data(), windowWidth * windowHeight, backgroundColor);
 
-        const Mat4 modelMatrix = Mat4::translation({2.0, 3.0, 4.0}) *
-                                 Mat4::rotationY(cubeYawRadians) *
-                                 Mat4::rotationX(cubePitchRadians);
+        const Mat4 modelMatrix = Mat4::translation({2.0, 3.0, 4.0});
         const Mat4 projectionMatrix = Mat4::perspective(verticalFovRadians, aspectRatio, nearPlane, farPlane);
 
         for (std::size_t index = 0; index < cubeVertices.size(); ++index)
         {
-            cubeWorldVertices[index] = modelMatrix * Vec4::fromPoint(cubeVertices[index]);
+            const Vec3 rotatedVertex = cubeOrientation.rotated(cubeVertices[index]);
+            cubeWorldVertices[index] = modelMatrix * Vec4::fromPoint(rotatedVertex);
             cubeViewVertices[index] = viewMatrix * cubeWorldVertices[index];
 
             const Vec4 clipVertex = projectionMatrix * cubeViewVertices[index];

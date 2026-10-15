@@ -22,6 +22,7 @@ The project is intentionally educational rather than production-oriented. The go
 
 - [Goals and philosophy](#project-goals)
 - [Technology](#planned-tech-stack)
+- [Runnable demos](#runnable-demos)
 - [Roadmap](#roadmap)
 - [Planned architecture](#intended-final-result)
 - [Current status](#current-status)
@@ -95,6 +96,24 @@ Transform
 ```
 
 The point is not to reinvent these libraries forever. The point is to understand them first.
+
+---
+
+## Runnable Demos
+
+Completed learning milestones are preserved as separate executables:
+
+```bash
+./build/demos/triangle-demo
+./build/demos/quaternion-demo
+./build/demos/wireframe-cube-demo
+```
+
+- `triangle-demo` draws the Phase 1 triangle outline;
+- `quaternion-demo` rotates a direction around Z using a quaternion;
+- `wireframe-cube-demo` renders the Phase 3 cube, supports quaternion rotation by dragging with the left mouse button, changes FOV with the mouse wheel, and uses `R` to SLERP halfway toward the neutral orientation.
+
+The demos reuse the current `engine` library while keeping their own independent `main()` functions.
 
 ---
 
@@ -811,7 +830,10 @@ Implementation has completed the C++ foundation, the first visual milestone, the
 - a wireframe cube rendered from eight 3D vertices and twelve edges;
 - perspective projection using vertical FOV, aspect ratio, and near/far planes;
 - perspective divide and viewport transformation into framebuffer coordinates;
-- `Mat4::perspective()` with automated checks that near and far map to normalized depths `0` and `1`.
+- `Mat4::perspective()` with automated checks that near and far map to normalized depths `0` and `1`;
+- runnable triangle, quaternion, and interactive wireframe-cube demos;
+- accumulated quaternion orientation controlled by mouse yaw and pitch;
+- mouse-wheel FOV control and an `R`-key SLERP experiment toward the neutral orientation.
 
 The next implementation step is Phase 4: replace the hardcoded camera translation with a controllable perspective camera. Matrix inversion remains intentionally deferred until the camera's position and orientation require a general view-matrix construction.
 

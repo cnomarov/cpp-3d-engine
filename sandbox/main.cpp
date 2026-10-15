@@ -103,9 +103,9 @@ int main()
     std::array<Vec2, 8> cubeProjectedVertices{};
     std::array<ScreenPoint, 8> cubeScreenVertices{};
 
-    double cubeYawRadians = 0.5;
-    double cubePitchRadians = 0.0;
     const double mouseSensitivity = 0.01;
+
+    Quaternion cubeOrientation = Quaternion::fromAxisAngle({0.0, 1.0, 0.0}, 0.5);
 
     const Vec3 cameraPosition{2.0, 3.0, 0.0};
     const Mat4 viewMatrix = Mat4::translation(-cameraPosition);
@@ -145,8 +145,16 @@ int main()
 
             if (event.type == SDL_MOUSEMOTION && (event.motion.state & SDL_BUTTON_LMASK) != 0)
             {
-                cubeYawRadians += static_cast<double>(event.motion.xrel) * mouseSensitivity;
-                cubePitchRadians += static_cast<double>(event.motion.yrel) * mouseSensitivity;
+                const double deltaYawRadians = static_cast<double>(event.motion.xrel) * mouseSensitivity;
+                const double deltaPitchRadians = static_cast<double>(event.motion.yrel) * mouseSensitivity;
+                const Quaternion deltaPitch = Quaternion::fromAxisAngle({1.0, 0.0, 0.0}, deltaPitchRadians);
+                const Quaternion deltaYaw = Quaternion::fromAxisAngle({0.0, 1.0, 0.0}, deltaYawRadians);
+                cubeOrientation = (deltaYaw * cubeOrientation * deltaPitch).normalized();
+            }
+
+            if (event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_R)
+            {
+                cubeOrientation = cubeOrientation.slerpTo(Quaternion::identity(), 0.5);
             }
 
             if (event.type == SDL_MOUSEWHEEL)
@@ -159,15 +167,15 @@ int main()
 
         // cube matrices
 
-        const Mat4 modelMatrix = Mat4::translation({2.0, 3.0, 4.0}) * Mat4::rotationY(cubeYawRadians) * Mat4::rotationX(cubePitchRadians);
+        const Mat4 modelMatrix = Mat4::translation({2.0, 3.0, 4.0});
         const Mat4 projectionMatrix = Mat4::perspective(verticalFovRadians, aspectRatio, nearPlane, farPlane);
 
-        const Quaternion cubeOrientation = Quaternion::fromEulerXYZ({cubePitchRadians, cubeYawRadians, 0.0});
         // cube view operations
 
         for (std::size_t index = 0; index < cubeVertices.size(); ++index)
         {
-            const Vec4 objectVertex = Vec4::fromPoint(cubeVertices[index]);
+            const Vec3 rotatedVertex = cubeOrientation.rotated(cubeVertices[index]);
+            const Vec4 objectVertex = Vec4::fromPoint(rotatedVertex);
             const Vec4 worldVertex = modelMatrix * objectVertex;
             cubeWorldVertices[index] = worldVertex;
         }
