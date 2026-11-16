@@ -9,6 +9,7 @@ target_sources(engine
         src/math/Mat4.cpp
         src/math/Quaternion.cpp
         src/renderer/SoftwareRenderer.cpp
+        src/camera/Camera.cpp
 )
 
 target_include_directories(engine

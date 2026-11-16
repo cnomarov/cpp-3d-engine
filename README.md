@@ -16,7 +16,7 @@ This project is a hands-on companion to *3D Math Primer for Graphics and Game De
 
 The project is intentionally educational rather than production-oriented. The goal is to implement the important math and engine systems manually, understand why they work, and immediately visualize each concept instead of leaving it as abstract theory.
 
-> **Current focus:** Phases 0, 1, 2, and 3 are complete. The next step is Phase 4: building a controllable perspective camera.
+> **Current focus:** Phases 0 through 4 are complete. The next step is Phase 5: loading and rendering a simple low-poly human mesh.
 
 ## Contents
 
@@ -107,11 +107,13 @@ Completed learning milestones are preserved as separate executables:
 ./build/demos/triangle-demo
 ./build/demos/quaternion-demo
 ./build/demos/wireframe-cube-demo
+./build/demos/camera-demo
 ```
 
 - `triangle-demo` draws the Phase 1 triangle outline;
 - `quaternion-demo` rotates a direction around Z using a quaternion;
 - `wireframe-cube-demo` renders the Phase 3 cube, supports quaternion rotation by dragging with the left mouse button, changes FOV with the mouse wheel, and uses `R` to SLERP halfway toward the neutral orientation.
+- `camera-demo` preserves the completed Phase 4 camera experiment: use the mouse to look around, `WASD` to move horizontally, `Space`/left `Ctrl` to move vertically, the mouse wheel to change FOV, and `O` to switch between free and orbit camera modes. In orbit mode, the left/right arrow keys move the camera around the cube. Holding the left mouse button still rotates the cube, and `R` applies the SLERP experiment.
 
 The demos reuse the current `engine` library while keeping their own independent `main()` functions.
 
@@ -243,16 +245,16 @@ A cube or simple primitive may be used temporarily here because it is useful for
 
 Build a controllable perspective camera.
 
-- [ ] Camera transform
-- [ ] Position
-- [ ] Heading / yaw
-- [ ] Pitch
-- [ ] View matrix
-- [ ] Perspective projection
-- [ ] FOV control
-- [ ] Near/far clipping configuration
-- [ ] Free camera movement
-- [ ] Orbit camera experiment
+- [x] Camera transform
+- [x] Position
+- [x] Heading / yaw
+- [x] Pitch
+- [x] View matrix
+- [x] Perspective projection
+- [x] FOV control
+- [x] Near/far clipping configuration
+- [x] Free camera movement
+- [x] Orbit camera experiment
 
 This phase should make concepts such as camera space, spherical coordinates, perspective projection, and FOV visible in real time.
 
@@ -810,7 +812,7 @@ Topics already studied include:
 - SLERP;
 - conversions between Euler angles, matrices, and quaternions.
 
-Implementation has completed the C++ foundation, the first visual milestone, the Phase 2 math library, and the Phase 3 rendering pipeline:
+Implementation has completed the C++ foundation, the first visual milestone, the Phase 2 math library, the Phase 3 rendering pipeline, and the Phase 4 camera:
 
 - SDL2 window creation and an application loop;
 - keyboard and mouse events;
@@ -833,9 +835,14 @@ Implementation has completed the C++ foundation, the first visual milestone, the
 - `Mat4::perspective()` with automated checks that near and far map to normalized depths `0` and `1`;
 - runnable triangle, quaternion, and interactive wireframe-cube demos;
 - accumulated quaternion orientation controlled by mouse yaw and pitch;
-- mouse-wheel FOV control and an `R`-key SLERP experiment toward the neutral orientation.
+- mouse-wheel FOV control and an `R`-key SLERP experiment toward the neutral orientation;
+- a standalone `Camera` class containing position, yaw, pitch, FOV, and near/far configuration;
+- camera-generated view and perspective-projection matrices with automated tests;
+- frame-rate-independent free-camera movement and mouse-controlled yaw/pitch;
+- an orbit-camera experiment with runtime switching between orbit and free modes;
+- a runnable `camera-demo` preserving the completed Phase 4 result.
 
-The next implementation step is Phase 4: replace the hardcoded camera translation with a controllable perspective camera. Matrix inversion remains intentionally deferred until the camera's position and orientation require a general view-matrix construction.
+The next implementation step is Phase 5: load vertex and triangle/index data for a simple low-poly human mesh and render it in wireframe. A general-purpose matrix inverse remains intentionally deferred because the camera view matrix can currently be constructed directly from inverse translation and inverse yaw/pitch rotations.
 
 ---
 

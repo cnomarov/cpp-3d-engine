@@ -116,3 +116,20 @@ target_compile_options(quaternion-tests
 )
 
 add_test(NAME quaternion-tests COMMAND quaternion-tests)
+
+add_executable(camera-tests camera/CameraTests.cpp)
+
+target_link_libraries(camera-tests
+    PRIVATE
+        engine
+)
+
+target_compile_options(camera-tests
+    PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Wconversion
+)
+
+add_test(NAME camera-tests COMMAND camera-tests)

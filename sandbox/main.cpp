@@ -4,6 +4,7 @@
 #include <engine/renderer/SoftwareRenderer.hpp>
 #include <engine/math/Mat4.hpp>
 #include <engine/math/Vec2.hpp>
+#include <engine/camera/Camera.hpp>
 #include <SDL.h>
 #include <cstdint>
 #include <array>
@@ -81,6 +82,8 @@ int main()
         return 1;
     }
 
+    SDL_SetRelativeMouseMode(SDL_TRUE);
+
     const std::array<Vec3, 8> cubeVertices{
         Vec3{-1.0, -1.0, -1.0},
         Vec3{1.0, -1.0, -1.0},
@@ -104,27 +107,44 @@ int main()
     std::array<ScreenPoint, 8> cubeScreenVertices{};
 
     const double mouseSensitivity = 0.01;
+    const double cameraSpeed = 3.0;
+
+    const Vec3 orbitTarget{2.0, 3.0, 4.0};
+    const double orbitRadius = 5;
+    double orbitAngle = std::numbers::pi / 4;
+    const double orbitAngularSpeed = 0.5;
+
+    const double orbitX = orbitTarget.x + orbitRadius * std::sin(orbitAngle);
+    const double orbitZ = orbitTarget.z - orbitRadius * std::cos(orbitAngle);
+    const Vec3 orbitPosition{orbitX, orbitTarget.y, orbitZ};
+
+    Camera camera{
+        .position = orbitPosition,
+        .yawRadians = -orbitAngle,
+        .pitchRadians = 0.0,
+        .verticalFovRadians = std::numbers::pi / 2,
+        .nearPlane = 0.1,
+        .farPlane = 100.0,
+    };
+
+    const double maxCameraPitch = std::numbers::pi / 2.0 - 0.01;
 
     Quaternion cubeOrientation = Quaternion::fromAxisAngle({0.0, 1.0, 0.0}, 0.5);
 
-    const Vec3 cameraPosition{2.0, 3.0, 0.0};
-    const Mat4 viewMatrix = Mat4::translation(-cameraPosition);
-
-    double verticalFovRadians = std::numbers::pi / 2;
     const double zoomStep = std::numbers::pi / 36;
     const double minFov = std::numbers::pi / 9;
     const double maxFov = std::numbers::pi * (2.0 / 3.0);
 
     const double aspectRatio = static_cast<double>(windowWidth) / static_cast<double>(windowHeight);
 
-    const double nearPlane = 0.1;
-    const double farPlane = 100.0;
-
     const ScreenPoint center{
         windowWidth / 2,
         windowHeight / 2};
 
     bool running = true;
+
+    Uint64 previousFrameTicks = SDL_GetTicks64();
+    bool orbitMode = true;
 
     while (running)
     {
@@ -143,13 +163,22 @@ int main()
                 std::cout << "Mouse coordinates: (" << event.button.x << ", " << event.button.y << ")" << "\n";
             }
 
-            if (event.type == SDL_MOUSEMOTION && (event.motion.state & SDL_BUTTON_LMASK) != 0)
+            if (event.type == SDL_MOUSEMOTION)
             {
-                const double deltaYawRadians = static_cast<double>(event.motion.xrel) * mouseSensitivity;
-                const double deltaPitchRadians = static_cast<double>(event.motion.yrel) * mouseSensitivity;
-                const Quaternion deltaPitch = Quaternion::fromAxisAngle({1.0, 0.0, 0.0}, deltaPitchRadians);
-                const Quaternion deltaYaw = Quaternion::fromAxisAngle({0.0, 1.0, 0.0}, deltaYawRadians);
-                cubeOrientation = (deltaYaw * cubeOrientation * deltaPitch).normalized();
+                if ((event.motion.state & SDL_BUTTON_LMASK) != 0)
+                {
+                    const double deltaYawRadians = static_cast<double>(event.motion.xrel) * mouseSensitivity;
+                    const double deltaPitchRadians = static_cast<double>(event.motion.yrel) * mouseSensitivity;
+                    const Quaternion deltaPitch = Quaternion::fromAxisAngle({1.0, 0.0, 0.0}, deltaPitchRadians);
+                    const Quaternion deltaYaw = Quaternion::fromAxisAngle({0.0, 1.0, 0.0}, deltaYawRadians);
+                    cubeOrientation = (deltaYaw * cubeOrientation * deltaPitch).normalized();
+                }
+                else
+                {
+                    camera.yawRadians += static_cast<double>(event.motion.xrel) * mouseSensitivity;
+                    camera.pitchRadians += static_cast<double>(event.motion.yrel) * mouseSensitivity;
+                    camera.pitchRadians = std::clamp(camera.pitchRadians, -maxCameraPitch, maxCameraPitch);
+                }
             }
 
             if (event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_R)
@@ -159,16 +188,75 @@ int main()
 
             if (event.type == SDL_MOUSEWHEEL)
             {
-                verticalFovRadians = std::clamp(verticalFovRadians - static_cast<double>(event.wheel.y) * zoomStep, minFov, maxFov);
+                camera.verticalFovRadians = std::clamp(camera.verticalFovRadians - static_cast<double>(event.wheel.y) * zoomStep, minFov, maxFov);
             }
+            if (event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.scancode == SDL_SCANCODE_O)
+            {
+                orbitMode = !orbitMode;
+            }
+        }
+
+        const Uint64 currentFrameTicks = SDL_GetTicks64();
+        const Uint64 elapsedMilliseconds = currentFrameTicks - previousFrameTicks;
+        const double deltaTimeSeconds = static_cast<double>(elapsedMilliseconds) / 1000.0;
+        previousFrameTicks = currentFrameTicks;
+
+        const double cameraMovement = cameraSpeed * deltaTimeSeconds;
+        const Vec3 cameraForward = {std::sin(camera.yawRadians), 0, std::cos(camera.yawRadians)};
+        const Vec3 worldUp{0.0, 1.0, 0.0};
+        const Vec3 cameraRight = worldUp.cross(cameraForward);
+
+        const Uint8 *keyboardState = SDL_GetKeyboardState(nullptr);
+
+        if (keyboardState[SDL_SCANCODE_W])
+        {
+            camera.position = camera.position + cameraForward * cameraMovement;
+        }
+        if (keyboardState[SDL_SCANCODE_S])
+        {
+            camera.position = camera.position - cameraForward * cameraMovement;
+        }
+        if (keyboardState[SDL_SCANCODE_A])
+        {
+            camera.position = camera.position - cameraRight * cameraMovement;
+        }
+        if (keyboardState[SDL_SCANCODE_D])
+        {
+            camera.position = camera.position + cameraRight * cameraMovement;
+        }
+        if (keyboardState[SDL_SCANCODE_LEFT])
+        {
+            orbitAngle -= orbitAngularSpeed * deltaTimeSeconds;
+        }
+        if (keyboardState[SDL_SCANCODE_RIGHT])
+        {
+            orbitAngle += orbitAngularSpeed * deltaTimeSeconds;
+        }
+        if (keyboardState[SDL_SCANCODE_SPACE])
+        {
+            camera.position = camera.position + worldUp * cameraMovement;
+        }
+        if (keyboardState[SDL_SCANCODE_LCTRL])
+        {
+            camera.position = camera.position - worldUp * cameraMovement;
+        }
+
+        if (orbitMode)
+        {
+            const double currentOrbitX = orbitTarget.x + orbitRadius * std::sin(orbitAngle);
+            const double currentOrbitZ = orbitTarget.z - orbitRadius * std::cos(orbitAngle);
+            camera.position = {currentOrbitX, orbitTarget.y, currentOrbitZ};
+            camera.yawRadians = -orbitAngle;
         }
 
         std::fill_n(renderer.data(), windowWidth * windowHeight, backgroundColor);
 
         // cube matrices
 
+        const Mat4 viewMatrix = camera.viewMatrix();
+
         const Mat4 modelMatrix = Mat4::translation({2.0, 3.0, 4.0});
-        const Mat4 projectionMatrix = Mat4::perspective(verticalFovRadians, aspectRatio, nearPlane, farPlane);
+        const Mat4 projectionMatrix = camera.projectionMatrix(aspectRatio);
 
         // cube view operations
 
