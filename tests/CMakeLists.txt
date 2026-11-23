@@ -133,3 +133,20 @@ target_compile_options(camera-tests
 )
 
 add_test(NAME camera-tests COMMAND camera-tests)
+
+add_executable(mesh-loader-tests mesh/MeshLoaderTests.cpp)
+
+target_link_libraries(mesh-loader-tests
+    PRIVATE
+        engine
+)
+
+target_compile_options(mesh-loader-tests
+    PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Wconversion
+)
+
+add_test(NAME mesh-loader-tests COMMAND mesh-loader-tests)

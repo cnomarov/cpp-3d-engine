@@ -10,6 +10,7 @@ target_sources(engine
         src/math/Quaternion.cpp
         src/renderer/SoftwareRenderer.cpp
         src/camera/Camera.cpp
+        src/mesh/MeshLoader.cpp
 )
 
 target_include_directories(engine
